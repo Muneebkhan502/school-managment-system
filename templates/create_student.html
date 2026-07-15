@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-lg mt-4 mb-5">
+            
+            <div class="card-header bg-primary text-white text-center py-4 rounded-top">
+                <h3 class="fw-bold my-1">Student Registration</h3>
+                <p class="mb-0 small text-white-50">Islamia College University - Admin Portal</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 bg-white">
+                
+                <form action="/add-student" method="POST">
+                    
+                    <div class="form-floating mb-3">
+                        <input class="form-control bg-light" id="rollno" name="rollno" type="number" placeholder="Enter Roll Number" required min="1" />
+                        <label for="rollno" class="text-muted">Roll Number</label>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                <input class="form-control bg-light" id="firstName" name="first_name" type="text" placeholder="First Name" required minlength="3" />
+                                <label for="firstName" class="text-muted">First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input class="form-control bg-light" id="lastName" name="last_name" type="text" placeholder="Last Name" required />
+                                <label for="lastName" class="text-muted">Last Name</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input class="form-control bg-light" id="marks" name="marks" type="number" placeholder="Obtained Marks" required min="0" max="100" />
+                        <label for="marks" class="text-muted">Total Marks (0-100)</label>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                        <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">Save Record</button>
+                        <a href="/students" class="btn btn-outline-secondary btn-lg px-4 shadow-sm">Cancel</a>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+          

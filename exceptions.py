@@ -1,0 +1,19 @@
+class AppException(Exception):
+    def __init__(self, status_code: int, message: str, field:str = None):
+        self.status_code = status_code
+        self.message = message
+        self.field = field 
+
+class NotFoundException(AppException):
+    def __init__(self, message = "Resource Not Found"):
+        super().__init__(status_code = 404, message = message)
+
+
+class UnauthorizedException(AppException):
+    def __init__(self, message = "Unauthorized"):
+        super().__init__(status_code = 401, message = message)
+
+
+class ForbiddenException(AppException):
+    def __init__(self, message = "Access Denied"):
+        super().__init__(status_code = 403, message = message)

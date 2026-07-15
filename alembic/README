@@ -1,0 +1,12 @@
+Generic single-database configuration.
+first install alembic
+--> pip install alembic
+then make all those neccessary directory by this command
+--> alembic init alembic
+Then go to alembic.ini file in env/
+and replace the default url with your own database url
+--> sqlalchemy.url = sqlite:///./Students.db
+then in env.py make these changes
+-->  from database import Base and all models
+-->target_metadata = Base.metadata
+

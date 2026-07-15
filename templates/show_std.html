@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">All Students Record</h2>
+    <a href="/add" class="btn btn-success">+ Add New Student</a>
+</div>
+
+<!-- Bootstrap Table -->
+<div class="table-responsive shadow-sm rounded">
+    <table class="table table-hover table-bordered align-middle bg-white mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th>Roll No</th>
+                <th>Full Name</th>
+                <th>Department</th>
+                <th>Marks</th>
+                <th>Email ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Jinja2 Loop: Dictionary (.items()) ke andar ghus kar data nikalna -->
+            {% for rollno, std in all_students.items() %}
+            <tr>
+                <td><strong>{{ std.rollno }}</strong></td>
+                <td>{{ std.full_name }}</td>
+                <td><span class="badge bg-info text-dark">{{ std.dept }}</span></td>
+                <td>{{ std.marks }}</td>
+                <td>{{ std.Email }}</td>
+                <td>
+                    <!-- CRUD operations ke dummy buttons -->
+                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                </td>
+            </tr>
+            {% else %}
+            <!-- Agar dictionary khali ho to ye chalega -->
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">No students found in the database.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
