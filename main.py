@@ -3,6 +3,15 @@ from fastapi.responses import JSONResponse
 # from database import engine,Base
 from routers import student,classes, user, auth
 from exceptions import AppException, NotFoundException, UnauthorizedException, ForbiddenException
+import traceback
+import sys
+
+try:
+    from routers import student, classes, user, auth
+except Exception as e:
+    print("IMPORT ERROR:", e)
+    traceback.print_exc()
+    sys.exit(1)
 app = FastAPI() # the engine has been started with name of app
 #Global Exception
 @app.exception_handler(AppException) 
