@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from routers import student,classes, user, auth
+from routers import student,classes, user, auth, gemini
 from exceptions import AppException, NotFoundException, UnauthorizedException, ForbiddenException
 from database import engine, Base
 from contextlib import asynccontextmanager
@@ -29,4 +29,5 @@ app.include_router(student.router, prefix="/students", tags=["Students"]) # tags
 app.include_router(classes.router, prefix="/classes", tags=["Classes"])
 app.include_router(user.router, prefix="/users", tags=["Users"]) 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(gemini.router, prefix="/ai", tags=["Gemini"])
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel ,Field, EmailStr, ConfigDict
+from pydantic import BaseModel ,Field, EmailStr, ConfigDict, field_validator
 class CreateStudent(BaseModel):
     first_name: str = Field(..., description="First name of the person", min_length=3, max_length=50)
     last_name: str = Field(..., description="Last name of the person", min_length=2, max_length=50)
@@ -73,3 +73,15 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     user_id: int 
     role: str 
+
+
+class PromtRequest(BaseModel):
+    prompt: str = Field(..., min_length=10, description = "enter a prompt to ask from gemini")
+    @field_validator("prompt")
+    @classmethod
+    def prompt_validation(cls, prompt: str) -> str:
+      if not prompt.strip():
+        raise ValueError("empty string is not allowed")
+      return prompt
+class PromtResponse(BaseModel):
+    response: str

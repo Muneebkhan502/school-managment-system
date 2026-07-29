@@ -1,13 +1,18 @@
 from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
-from models import Student_DB, SchoolClass, User
-from schemas import CreateStudent, Token,UpdateStudent, CreateClass, ClassResponse, CreateUser,UserResponse,UpdateUser,Login
+from models import Student_DB, SchoolClass, User, ChatHistory
+from schemas import CreateStudent, Token,UpdateStudent, CreateClass, ClassResponse, CreateUser,UserResponse,UpdateUser,Login, PromtRequest,PromtResponse
 from fastapi import HTTPException, status, Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from exceptions import NotFoundException, ForbiddenException, UnauthorizedException
 from utils.jwt import create_access_token, create_refresh_token, require_role, verify_token, get_current_user
+import os
+from dotenv import load_dotenv
+from config import GEMINI_API_KEY
+from google import genai
+from google.genai import types
 class StudentManager(): 
 
     def __init__(self, db: Session):
@@ -172,3 +177,48 @@ class UserManager():
         new_refresh = create_refresh_token(user.id, user.role.value)
 
         return Token(access_token=new_access, refresh_token=new_refresh)
+
+class AiManager():
+    def __init__(self,db:Session):
+        self.db = db
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
+
+    def ask_ai(self,prompt: PromtRequest, current_user):
+        # fetch first 10 chats from history
+        history = self.db.execute(select(ChatHistory).where(ChatHistory.user_id == current_user.id).order_by(ChatHistory.created_at.desc()).limit(10)).scalars().all()
+        #Add chat history in a contents with expacted formate of google
+        contents = []
+        for chat in reversed(history):
+            contents.append(types.Content(role = "user",
+                                          parts = [types.Part(text = chat.prompt)]))
+            contents.append(types.Content(role = "model",
+                                          parts = [types.Part(text = chat.response)]))
+        # add new prompt
+        contents.append(types.Content(role = "user",
+                                      parts = [types.Part(text = prompt.prompt)]))
+        # print(contents)
+        # print(type(contents))
+        try:
+            response = self.client.models.generate_content(model = "gemini-3.5-flash", contents = contents)
+            # print(response.text)
+            
+            chat = ChatHistory(
+                user_id = current_user.id,
+                prompt = prompt.prompt,
+                response = response.text
+            )
+            self.db.add(chat)
+            self.db.commit()  
+            self.db.refresh(chat) 
+            return PromtResponse(
+                response=response.text
+                    )
+        except Exception as e:
+            print(e)
+            print(type(e))
+            #it is good practice to keep e out of httpexception bcz of security concern 
+            #imagin if u keep inside it then let say error is about api key then client will leak apikey to user
+            raise HTTPException(
+                status_code = 500,
+                detail = "Failed to generate Ai response"
+            )

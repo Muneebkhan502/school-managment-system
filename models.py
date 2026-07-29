@@ -1,8 +1,9 @@
-from sqlalchemy import Integer, String,Float, ForeignKey
+from sqlalchemy import Integer, String,Float, ForeignKey, TIMESTAMP,func
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 from database import Base
+from datetime import datetime
 
 class Student_DB(Base):
     __tablename__ = "students"
@@ -51,3 +52,13 @@ class User(Base):
                                                     name="userrole_type"), default=UserRole.student,
                                                       nullable=False)
     students: Mapped["Student_DB"] = relationship(back_populates="user")
+    ai_chats: Mapped[list["ChatHistory"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+
+class ChatHistory(Base):
+    __tablename__ = "ai_history"
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    prompt: Mapped[str] = mapped_column(nullable=False)
+    response: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now()) 
+    user: Mapped["User"] = relationship(back_populates="ai_chats")
