@@ -211,6 +211,7 @@ class AiManager():
             self.db.commit()  
             self.db.refresh(chat) 
             return PromtResponse(
+                prompt = prompt.prompt,
                 response=response.text
                     )
         except Exception as e:
