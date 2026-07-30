@@ -222,3 +222,21 @@ class AiManager():
                 status_code = 500,
                 detail = "Failed to generate Ai response"
             )
+
+    def show_chat_history(self,current_user):
+        history = self.db.execute(select(ChatHistory).where(ChatHistory.user_id == current_user.id).order_by(ChatHistory.created_at.desc()))
+        existing = history.scalars().all()
+       
+        if not existing:
+            raise NotFoundException("User or Chat not found")
+        return existing
+
+    def get_chat(self, search: str, current_user):
+        query = select(ChatHistory).where(ChatHistory.user_id == current_user.id)
+            #search filter
+        if search:
+            query = query.where(ChatHistory.prompt.ilike(f"%{search}%"))
+            result = self.db.execute(query)
+            chat = result.scalars().all()
+            return chat
+        raise NotFoundException("User Or Chat Not Found")

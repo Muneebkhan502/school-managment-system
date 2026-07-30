@@ -1,4 +1,5 @@
 from pydantic import BaseModel ,Field, EmailStr, ConfigDict, field_validator
+from datetime import datetime
 class CreateStudent(BaseModel):
     first_name: str = Field(..., description="First name of the person", min_length=3, max_length=50)
     last_name: str = Field(..., description="Last name of the person", min_length=2, max_length=50)
@@ -84,4 +85,11 @@ class PromtRequest(BaseModel):
         raise ValueError("empty string is not allowed")
       return prompt
 class PromtResponse(BaseModel):
+    prompt: str | None = None
     response: str
+
+class ChatHistoryResponse(BaseModel):
+    id: int
+    prompt: str
+    response: str
+    created_at: datetime
